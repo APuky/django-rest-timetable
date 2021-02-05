@@ -8,8 +8,12 @@ import dayGridPlugin from "@fullcalendar/daygrid"
 import timeGridPlugin from "@fullcalendar/timegrid"
 import interactionPlugin from "@fullcalendar/interaction"
 // import { createEventId } from "./event-utils"
+import { toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 import "./main.css"
 import "bootstrap/dist/css/bootstrap.min.css"
+
+toast.configure()
 
 export default class Scheduler extends React.Component {
   constructor(props) {
@@ -28,7 +32,6 @@ export default class Scheduler extends React.Component {
         end_date: "",
       },
     }
-    this.handleData = this.handleData.bind(this)
   }
 
   componentDidMount() {
@@ -42,7 +45,7 @@ export default class Scheduler extends React.Component {
       .then(this.handleData)
   }
 
-  handleData() {
+  handleData = () => {
     let newData = this.state.data.map((event) => {
       let events = {
         id: event.id,
@@ -75,11 +78,16 @@ export default class Scheduler extends React.Component {
     axios
       .post("http://localhost:8000/api/Order", data)
       .then((res) => {
+        toast.success("Uspješno dodano")
         console.log(res)
+        this.handleClose()
       })
-      .then(this.handleClose())
+      .catch((err) => {
+        toast.error("Došlo je do pogreške")
+        console.log(err)
+      })
 
-    window.location.reload()
+    // window.location.reload()
   }
 
   render() {
@@ -181,12 +189,12 @@ export default class Scheduler extends React.Component {
               events={this.state.newData}
               select={this.handleDateSelect}
               //   eventContent={renderEventContent} // custom render function
-                eventClick={this.handleEventClick}
+              eventClick={this.handleEventClick}
+              // eventRemove={this.handleDelete}
               //   eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
               /* you can update a remote database when these fire:
             eventAdd={function(){}}
             eventChange={function(){}}
-            eventRemove={function(){}}
             */
             />
           </div>
@@ -228,7 +236,15 @@ export default class Scheduler extends React.Component {
   //   }
 
   handleEventClick = (clickInfo) => {
-    console.log("INFO", clickInfo)
+    console.log("INFOtitle", clickInfo.event._def.title)
+    console.log("INFOdateStart", clickInfo.event._instance.range.start)
+    console.log("INFOdateEnd", clickInfo.event._instance.range.end)
+
+    let deleteEvent = this.state.newData.find(
+      (event) => event.title === clickInfo.event._def.title
+    )
+
+    console.log("deleteEvent", deleteEvent)
   }
 
   //   handleEvents = (events) => {
