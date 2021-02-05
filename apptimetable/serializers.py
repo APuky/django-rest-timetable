@@ -1,12 +1,8 @@
 from rest_framework import serializers
-from .models import Order,Machine
+from .models import Order
 
 class OrderSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Order
-		fields =('id', 'order_name','client','order_quantity','start_date','end_date')
+		fields =('id', 'order_name','client','order_quantity','machine_name','start_date','end_date')
 
-class MachineSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Machine
-		fields =('id', 'machine_name','order_id')
