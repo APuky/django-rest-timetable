@@ -30,6 +30,7 @@ export default class Scheduler extends React.Component {
         order_quantity: 0,
         start_date: "",
         end_date: "",
+        machine_name: "",
       },
     }
   }
@@ -49,9 +50,9 @@ export default class Scheduler extends React.Component {
     let newData = this.state.data.map((event) => {
       let events = {
         id: event.id,
-        title: event.client + "/" + event.order_name,
-        start: event.start_date + "T12:00:00", // OVISNO DALI JE UKLJUCUJUCI DAN ILI NE
-        end: event.end_date + "T12:00:00",
+        title: event.client + "/" + event.order_name + "/" + event.machine_name,
+        start: event.start_date, // OVISNO DALI JE UKLJUCUJUCI DAN ILI NE
+        end: event.end_date,
       }
       return events
     })
@@ -74,6 +75,7 @@ export default class Scheduler extends React.Component {
       order_quantity: this.state.order_quantity,
       start_date: this.state.start_date,
       end_date: this.state.end_date,
+      machine_name: this.state.machine_name,
     }
     axios
       .post("http://localhost:8000/api/Order", data)
@@ -87,7 +89,7 @@ export default class Scheduler extends React.Component {
         console.log(err)
       })
 
-    // window.location.reload()
+    window.location.reload()
   }
 
   render() {
@@ -97,7 +99,10 @@ export default class Scheduler extends React.Component {
       order_quantity,
       start_date,
       end_date,
+      machine_name
     } = this.state
+    console.log('state', this.state);
+
     if (this.state.isLoading) {
       return <h1>Loading...</h1>
     } else {
@@ -143,9 +148,20 @@ export default class Scheduler extends React.Component {
                 </Form.Group>
 
                 <Form.Group>
+                  <Form.Label>Machine name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter Machine name"
+                    name="machine_name"
+                    value={machine_name}
+                    onChange={this.changeHandler}
+                  />
+                </Form.Group>
+
+                <Form.Group>
                   <Form.Label>Start Date</Form.Label>
                   <Form.Control
-                    type="date"
+                    type="datetime-local"
                     name="start_date"
                     value={start_date}
                     onChange={this.changeHandler}
@@ -155,7 +171,7 @@ export default class Scheduler extends React.Component {
                 <Form.Group>
                   <Form.Label>End Date</Form.Label>
                   <Form.Control
-                    type="date"
+                    type="datetime-local"
                     name="end_date"
                     value={end_date}
                     onChange={this.changeHandler}
@@ -175,11 +191,11 @@ export default class Scheduler extends React.Component {
           <div className="demo-app-main">
             <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-              // headerToolbar={{
-              //     left: "prev,next today",
-              //     center: "title",
-              //     right: "dayGridMonth,timeGridWeek,timeGridDay",
-              //   }}
+              headerToolbar={{
+                  left: "prev,next today",
+                  center: "title",
+                  right: "dayGridMonth,timeGridWeek,timeGridDay",
+                }}
               initialView="dayGridMonth"
               editable={true}
               selectable={true}
