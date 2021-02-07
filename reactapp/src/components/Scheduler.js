@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button"
 import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import timeGridPlugin from "@fullcalendar/timegrid"
+import listPlugin from "@fullcalendar/list"
 import interactionPlugin from "@fullcalendar/interaction"
 // import { createEventId } from "./event-utils"
 import { toast } from "react-toastify"
@@ -24,18 +25,15 @@ export default class Scheduler extends React.Component {
       isLoading: true,
       newData: [],
       openModal: false,
-      postData: {
-        order_name: "",
-        client: "",
-        order_quantity: 0,
-        start_date: "",
-        end_date: "",
-        machine_name: "",
-      },
+      isFiltered: false,
     }
   }
 
   componentDidMount() {
+    this.fetchData()
+  }
+
+  fetchData = () => {
     axios
       .get("http://localhost:8000/api/Order")
       .then((res) =>
@@ -83,13 +81,141 @@ export default class Scheduler extends React.Component {
         toast.success("Uspješno dodano")
         console.log(res)
         this.handleClose()
+        this.fetchData()
       })
       .catch((err) => {
         toast.error("Došlo je do pogreške")
         console.log(err)
       })
+  }
 
+  getUniqueListBy = (arr, key) => {
+    return [...new Map(arr.map((item) => [item[key], item])).values()]
+  }
+
+  handleClient = (e) => {
+    let data = []
+    let filteredByClient = []
+
+    if (this.state.isFiltered) {
+      data = this.state.newData
+      console.log("data", data)
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].client === e.target.value) {
+          filteredByClient.push(data[i])
+        }
+      }
+    } else {
+      data = this.state.data
+      console.log("data", data)
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].client === e.target.value) {
+          filteredByClient.push(data[i])
+        }
+      }
+      filteredByClient = filteredByClient.map((event) => {
+        let events = {
+          id: event.id,
+          title:
+            event.client + "/" + event.order_name + "/" + event.machine_name,
+          start: event.start_date, // OVISNO DALI JE UKLJUCUJUCI DAN ILI NE
+          end: event.end_date,
+          client: event.client,
+          order_name: event.order_name,
+          machine_name: event.machine_name,
+        }
+        return events
+      })
+    }
+    console.log("filteredByClient", filteredByClient)
+
+    this.setState({
+      newData: filteredByClient,
+      isFiltered: true,
+    })
+  }
+  handleOrder = (e) => {
+    let data = []
+    let filteredByOrder = []
+
+    if (this.state.isFiltered) {
+      data = this.state.newData
+      console.log("data", data)
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].order_name === e.target.value) {
+          filteredByOrder.push(data[i])
+        }
+      }
+    } else {
+      data = this.state.data
+
+      console.log("data", data)
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].order_name === e.target.value) {
+          filteredByOrder.push(data[i])
+        }
+      }
+      filteredByOrder = filteredByOrder.map((event) => {
+        let events = {
+          id: event.id,
+          title:
+            event.client + "/" + event.order_name + "/" + event.machine_name,
+          start: event.start_date, // OVISNO DALI JE UKLJUCUJUCI DAN ILI NE
+          end: event.end_date,
+        }
+        return events
+      })
+    }
+
+    console.log("filteredByOrder", filteredByOrder)
+
+    this.setState({
+      newData: filteredByOrder,
+      isFiltered: true,
+    })
+  }
+  handleMachine = (e) => {
+    let data = []
+    let filteredByMachine = []
+
+    if (this.state.isFiltered) {
+      data = this.state.newData
+      console.log("data", data)
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].machine_name === e.target.value) {
+          filteredByMachine.push(data[i])
+        }
+      }
+    } else {
+      data = this.state.data
+      console.log("data", data)
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].machine_name === e.target.value) {
+          filteredByMachine.push(data[i])
+        }
+      }
+      filteredByMachine = filteredByMachine.map((event) => {
+        let events = {
+          id: event.id,
+          title:
+            event.client + "/" + event.order_name + "/" + event.machine_name,
+          start: event.start_date, // OVISNO DALI JE UKLJUCUJUCI DAN ILI NE
+          end: event.end_date,
+        }
+        return events
+      })
+    }
+    console.log("filteredByMachine", filteredByMachine)
+
+    this.setState({
+      newData: filteredByMachine,
+      isFiltered: true,
+    })
+  }
+
+  handleRemoveFilter = () => {
     window.location.reload()
+    console.log("object", this.state)
   }
 
   render() {
@@ -99,15 +225,69 @@ export default class Scheduler extends React.Component {
       order_quantity,
       start_date,
       end_date,
-      machine_name
+      machine_name,
+      data,
     } = this.state
-    console.log('state', this.state);
+    console.log("state", this.state)
+
+    const uniqueClientData = this.getUniqueListBy(data, "client")
+    const uniqueOrdertData = this.getUniqueListBy(data, "order_name")
+    const uniqueMachineData = this.getUniqueListBy(data, "machine_name")
 
     if (this.state.isLoading) {
       return <h1>Loading...</h1>
     } else {
       return (
         <div className="demo-app">
+          <div className="demo-app-sidebar">
+            <div className="demo-app-sidebar-section">
+              <h2>Filter</h2>
+              <Form.Group className="demo-app-sidebar-section-client">
+                <Form.Label>Sort by client:</Form.Label>
+                <Form.Control
+                  size="sm"
+                  as="select"
+                  onChange={this.handleClient}
+                >
+                  <option>Select...</option>
+                  {uniqueClientData.map((list) => (
+                    <option key={list.id} value={list.client}>
+                      {list.client}
+                    </option>
+                  ))}{" "}
+                </Form.Control>
+              </Form.Group>
+              <Form.Group className="demo-app-sidebar-section-order">
+                <Form.Label>Sort by order:</Form.Label>
+                <Form.Control size="sm" as="select" onChange={this.handleOrder}>
+                  <option>Select...</option>
+                  {uniqueOrdertData.map((list) => (
+                    <option key={list.id} value={list.order_name}>
+                      {list.order_name}
+                    </option>
+                  ))}{" "}
+                </Form.Control>
+              </Form.Group>
+              <Form.Group className="demo-app-sidebar-section-machine">
+                <Form.Label>Sort by machine:</Form.Label>
+                <Form.Control
+                  size="sm"
+                  as="select"
+                  onChange={this.handleMachine}
+                >
+                  <option>Select...</option>
+                  {uniqueMachineData.map((list) => (
+                    <option key={list.id} value={list.machine_name}>
+                      {list.machine_name}
+                    </option>
+                  ))}{" "}
+                </Form.Control>
+              </Form.Group>
+              <Button variant="danger" onClick={this.handleRemoveFilter}>
+                Remove filter
+              </Button>
+            </div>
+          </div>{" "}
           <Modal show={this.state.openModal} onHide={this.handleClose}>
             <Modal.Header closeButton>
               <Modal.Title>Add Event</Modal.Title>
@@ -190,12 +370,17 @@ export default class Scheduler extends React.Component {
           </Modal>
           <div className="demo-app-main">
             <FullCalendar
-              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+              plugins={[
+                dayGridPlugin,
+                timeGridPlugin,
+                interactionPlugin,
+                listPlugin,
+              ]}
               headerToolbar={{
-                  left: "prev,next today",
-                  center: "title",
-                  right: "dayGridMonth,timeGridWeek,timeGridDay",
-                }}
+                left: "prev,next today",
+                center: "title",
+                right: "dayGridMonth,timeGridWeek,listWeek",
+              }}
               initialView="dayGridMonth"
               editable={true}
               selectable={true}
