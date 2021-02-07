@@ -3,12 +3,12 @@ import axios from "axios"
 import Modal from "react-bootstrap/Modal"
 import Form from "react-bootstrap/Form"
 import Button from "react-bootstrap/Button"
+import Spinner from "react-bootstrap/Spinner"
 import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import timeGridPlugin from "@fullcalendar/timegrid"
 import listPlugin from "@fullcalendar/list"
 import interactionPlugin from "@fullcalendar/interaction"
-// import { createEventId } from "./event-utils"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import "./main.css"
@@ -235,7 +235,11 @@ export default class Scheduler extends React.Component {
     const uniqueMachineData = this.getUniqueListBy(data, "machine_name")
 
     if (this.state.isLoading) {
-      return <h1>Loading...</h1>
+      return (
+        <div className="spinner">
+          <Spinner animation="border" variant="primary" />
+        </div>
+      )
     } else {
       return (
         <div className="demo-app">
@@ -363,7 +367,18 @@ export default class Scheduler extends React.Component {
               <Button variant="secondary" onClick={this.handleClose}>
                 Close
               </Button>
-              <Button variant="primary" onClick={this.submitHandler}>
+              <Button
+                variant="primary"
+                disabled={
+                  (!this.state.order_name,
+                  !this.state.client,
+                  !this.state.order_quantity,
+                  !this.state.machine_name,
+                  !this.state.start_date,
+                  !this.state.end_date)
+                }
+                onClick={this.submitHandler}
+              >
                 Add event
               </Button>
             </Modal.Footer>
