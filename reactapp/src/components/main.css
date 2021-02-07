@@ -9,7 +9,8 @@ body > div {
 
 h2 {
   margin: 0;
-  font-size: 16px;
+  font-size: 30px;
+  font-weight: bold;
 }
 
 ul {
@@ -35,14 +36,40 @@ b {
 }
 
 .demo-app-sidebar {
-  width: 300px;
+  width: 350px;
   line-height: 1.5;
-  background: #eaf9ff;
+  background: #2c3e50;
   border-right: 1px solid #d3e2e8;
 }
 
 .demo-app-sidebar-section {
+  text-align: left;
   padding: 2em;
+  color: white;
+}
+
+.demo-app-sidebar-section > Button {
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.demo-app-sidebar-section-client {
+  margin-top: 50px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.demo-app-sidebar-section-order {
+  margin-top: 50px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.demo-app-sidebar-section-machine {
+  margin-top: 50px;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .demo-app-main {
@@ -54,4 +81,5 @@ b {
   /* the calendar root */
   max-width: 1100px;
   margin: 0 auto;
+  min-height: calc(100vh - 70px);
 }
