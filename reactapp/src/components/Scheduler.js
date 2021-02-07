@@ -129,10 +129,17 @@ export default class Scheduler extends React.Component {
     }
     console.log("filteredByClient", filteredByClient)
 
-    this.setState({
-      newData: filteredByClient,
-      isFiltered: true,
-    })
+    if (filteredByClient.length === 0) {
+      toast.error("No results for wanted filter")
+      this.setState({
+        isFiltered: false,
+      })
+    } else {
+      this.setState({
+        newData: filteredByClient,
+        isFiltered: true,
+      })
+    }
   }
   handleOrder = (e) => {
     let data = []
@@ -169,10 +176,17 @@ export default class Scheduler extends React.Component {
 
     console.log("filteredByOrder", filteredByOrder)
 
-    this.setState({
-      newData: filteredByOrder,
-      isFiltered: true,
-    })
+    if (filteredByOrder.length === 0) {
+      toast.error("No results for wanted filter")
+      this.setState({
+        isFiltered: false,
+      })
+    } else {
+      this.setState({
+        newData: filteredByOrder,
+        isFiltered: true,
+      })
+    }
   }
   handleMachine = (e) => {
     let data = []
@@ -207,10 +221,17 @@ export default class Scheduler extends React.Component {
     }
     console.log("filteredByMachine", filteredByMachine)
 
-    this.setState({
-      newData: filteredByMachine,
-      isFiltered: true,
-    })
+    if (filteredByMachine.length === 0) {
+      toast.error("No results for wanted filter")
+      this.setState({
+        isFiltered: false,
+      })
+    } else {
+      this.setState({
+        newData: filteredByMachine,
+        isFiltered: true,
+      })
+    }
   }
 
   handleRemoveFilter = () => {
